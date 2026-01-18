@@ -303,22 +303,27 @@ export default function App() {
   // 处理AI优化完成
   const handleAIOptimizationComplete = useCallback(async (optimizedResult) => {
     console.log('AI优化完成回调被触发:', optimizedResult);
-    if (optimizedResult.success && optimizedResult.enhanced_by_ai && optimizedResult.text) {
-      // 显示AI优化后的文本
+    if (optimizedResult.enhanced_by_ai && optimizedResult.text) {
+      // AI处理成功
       setProcessedText(optimizedResult.text);
-      
-      // 自动粘贴AI优化后的文本
-      console.log("📋 准备粘贴AI优化后的文本:", optimizedResult.text);
+
+      // 自动粘贴AI处理后的文本
+      console.log("📋 准备粘贴AI处理后的文本:", optimizedResult.text);
       await safePaste(optimizedResult.text);
-      console.log("✅ AI优化文本粘贴完成");
-      
-      toast.success("🤖 AI文本优化完成并已自动粘贴！");
+      console.log("✅ AI处理文本粘贴完成");
+
+      // 根据文本是否改变显示不同的提示
+      if (optimizedResult.text_was_changed === false) {
+        toast.success("🤖 AI处理完成，文本无需优化");
+      } else {
+        toast.success("🤖 AI文本优化完成并已自动粘贴！");
+      }
       console.log('AI优化文本已设置:', optimizedResult.text);
     } else {
-      console.warn('AI优化结果无效，使用原始文本:', optimizedResult);
-      // 如果AI优化失败，则粘贴原始文本
+      console.warn('AI优化结果无效或未启用AI，使用原始文本:', optimizedResult);
+      // AI未启用或实际处理失败，则粘贴原始文本
       if (originalText) {
-        console.log("📋 AI优化失败，粘贴原始文本:", originalText);
+        console.log("📋 AI未使用或失败，粘贴原始文本:", originalText);
         await safePaste(originalText);
         toast.info("AI优化失败，已粘贴原始识别文本");
       }

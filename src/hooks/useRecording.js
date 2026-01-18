@@ -160,16 +160,18 @@ export const useRecording = () => {
               const useAI = await window.electronAPI.getSetting('enable_ai_optimization', true);
 
               let finalData = { ...transcriptionData };
+              let aiProcessingSuccess = false; // Track actual AI processing success
 
               if (useAI) {
                 try {
                   if (window.electronAPI && window.electronAPI.log) {
                     window.electronAPI.log('info', '开始AI文本优化:', raw_text.substring(0, 50) + '...');
                   }
-                  
+
                   const result = await window.electronAPI.processText(raw_text, 'optimize');
 
                   if (result && result.success) {
+                    aiProcessingSuccess = true; // AI API call succeeded
                     const processed_text = result.text;
                     finalData.processed_text = processed_text;
                     // 如果AI优化后的文本与原始文本不同，则将优化后的文本作为主文本
@@ -202,19 +204,21 @@ export const useRecording = () => {
                 }
 
                 // 通知UI更新并触发复制操作
-                if (useAI && finalData.processed_text && finalData.processed_text !== raw_text) {
-                  // 有AI优化结果时
+                if (useAI && aiProcessingSuccess) {
+                  // AI处理成功时（无论文本是否改变）
+                  const textWasChanged = finalData.processed_text && finalData.processed_text.trim() !== raw_text.trim();
                   const enhancedResult = {
                     ...transcriptionResult,
-                    text: finalData.processed_text,
+                    text: finalData.processed_text || raw_text,
                     processed_text: finalData.processed_text,
                     enhanced_by_ai: true,
+                    text_was_changed: textWasChanged,
                   };
                   if (window.onAIOptimizationComplete) {
                     window.onAIOptimizationComplete(enhancedResult);
                   }
                 } else {
-                  // 没有AI优化或AI优化失败时，使用原始文本
+                  // 没有启用AI或AI处理实际失败时，使用原始文本
                   const finalResult = {
                     ...transcriptionResult,
                     text: raw_text,
