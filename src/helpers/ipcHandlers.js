@@ -367,16 +367,17 @@ class IPCHandlers {
 
     ipcMain.handle("get-current-hotkey", () => {
       try {
+        const defaultHotkey = this.environmentManager.getAppConfig().globalHotkey;
         if (this.hotkeyManager) {
           const hotkeys = this.hotkeyManager.getRegisteredHotkeys();
           // 返回第一个非F2的热键，或默认热键
-          const mainHotkey = hotkeys.find(key => key !== 'F2') || "CommandOrControl+Shift+Space";
+          const mainHotkey = hotkeys.find(key => key !== 'F2') || defaultHotkey;
           return mainHotkey;
         }
-        return "CommandOrControl+Shift+Space";
+        return defaultHotkey;
       } catch (error) {
         this.logger.error("获取当前热键失败:", error);
-        return "CommandOrControl+Shift+Space";
+        return this.environmentManager.getAppConfig().globalHotkey;
       }
     });
 

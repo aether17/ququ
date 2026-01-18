@@ -91,6 +91,7 @@ export const useHotkey = () => {
   const formatHotkey = (hotkeyString) => {
     return hotkeyString
       .replace('CommandOrControl', navigator.platform.includes('Mac') ? '⌘' : 'Ctrl')
+      .replace('Super', navigator.platform.includes('Mac') ? '⌘' : 'Meta')
       .replace('Shift', '⇧')
       .replace('Alt', '⌥')
       .replace('Space', '空格')

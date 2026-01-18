@@ -456,10 +456,11 @@ export default function App() {
 
     const initializeHotkey = async () => {
       try {
-        // 注册默认热键 CommandOrControl+Shift+Space
-        const success = await registerHotkey('CommandOrControl+Shift+Space');
+        // 从主进程获取配置的热键
+        const configuredHotkey = await window.electronAPI.getCurrentHotkey();
+        const success = await registerHotkey(configuredHotkey);
         if (success) {
-          console.log('主窗口热键注册成功');
+          console.log('主窗口热键注册成功:', configuredHotkey);
         } else {
           console.error('主窗口热键注册失败');
         }

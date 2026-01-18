@@ -163,7 +163,7 @@ contextBridge.exposeInMainWorld("constants", {
   VERSION: "1.0.0",
   SUPPORTED_AUDIO_FORMATS: ["wav", "mp3", "m4a", "flac"],
   SUPPORTED_EXPORT_FORMATS: ["txt", "docx", "pdf", "json"],
-  DEFAULT_HOTKEY: "CommandOrControl+Shift+Space",
+  DEFAULT_HOTKEY: "Super+Space",  // Can be overridden via GLOBAL_HOTKEY in .env
   MAX_RECORDING_DURATION: 300000, // 5分钟
   MAX_TEXT_LENGTH: 10000,
   CHINESE_LANGUAGE_CODES: ["zh", "zh-CN", "zh-TW", "zh-HK"]
