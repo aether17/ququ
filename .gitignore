@@ -6,6 +6,9 @@ yarn-error.log*
 pnpm-debug.log*
 yarn.lock*
 
+# Agents Linking
+CLAUDE.md
+GEMINI.md
 
 # Production builds
 dist/
