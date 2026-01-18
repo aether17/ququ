@@ -8,7 +8,7 @@ import { useRecording } from "./hooks/useRecording";
 import { useTextProcessing } from "./hooks/useTextProcessing";
 import { useModelStatus } from "./hooks/useModelStatus";
 import { usePermissions } from "./hooks/usePermissions";
-import { Mic, MicOff, Settings, History, Copy, Download } from "lucide-react";
+import { Mic, MicOff, Settings, History, Copy, Download, Pin, PinOff, Minus } from "lucide-react";
 import SettingsPanel from "./components/SettingsPanel";
 import { ModelDownloadProgress } from "./components/ui/model-status-indicator";
 
@@ -219,6 +219,7 @@ export default function App() {
   const [processedText, setProcessedText] = useState("");
   const [showTextArea, setShowTextArea] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [isPinned, setIsPinned] = useState(true);
   
   const { isDragging, handleMouseDown, handleMouseMove, handleMouseUp, handleClick } = useWindowDrag();
   const modelStatus = useModelStatus();
@@ -348,6 +349,35 @@ export default function App() {
       window.onAIOptimizationComplete = null;
     };
   }, [handleRecordingComplete, handleAIOptimizationComplete]);
+
+  // 加载初始置顶状态
+  useEffect(() => {
+    const loadPinState = async () => {
+      if (window.electronAPI?.getAlwaysOnTop) {
+        const result = await window.electronAPI.getAlwaysOnTop();
+        if (result.success) setIsPinned(result.alwaysOnTop);
+      }
+    };
+    loadPinState();
+  }, []);
+
+  // 切换窗口置顶
+  const handleTogglePin = async () => {
+    if (window.electronAPI?.toggleAlwaysOnTop) {
+      const result = await window.electronAPI.toggleAlwaysOnTop();
+      if (result.success) {
+        setIsPinned(result.alwaysOnTop);
+        toast.success(result.alwaysOnTop ? "窗口已置顶" : "已取消置顶");
+      }
+    }
+  };
+
+  // 最小化到托盘
+  const handleMinimizeToTray = () => {
+    if (window.electronAPI) {
+      window.electronAPI.hideWindow();
+    }
+  };
 
   // 处理复制文本
   const handleCopyText = async (text) => {
@@ -650,6 +680,28 @@ export default function App() {
             蛐蛐
           </h1>
           <div className="flex items-center space-x-3 non-draggable">
+            <Tooltip content={isPinned ? "取消置顶" : "窗口置顶"} position="bottom">
+              <button
+                onClick={handleTogglePin}
+                className={`p-3 hover:bg-white/70 dark:hover:bg-gray-700/70 rounded-xl transition-colors shadow-sm ${
+                  isPinned ? "bg-blue-100/50 dark:bg-blue-900/30" : ""
+                }`}
+              >
+                {isPinned ? (
+                  <Pin className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+                ) : (
+                  <PinOff className="w-6 h-6 text-gray-700 dark:text-gray-300" />
+                )}
+              </button>
+            </Tooltip>
+            <Tooltip content="最小化到托盘" position="bottom">
+              <button
+                onClick={handleMinimizeToTray}
+                className="p-3 hover:bg-white/70 dark:hover:bg-gray-700/70 rounded-xl transition-colors shadow-sm"
+              >
+                <Minus className="w-6 h-6 text-gray-700 dark:text-gray-300" />
+              </button>
+            </Tooltip>
             <Tooltip content="历史记录" position="bottom">
               <button
                 onClick={handleOpenHistory}

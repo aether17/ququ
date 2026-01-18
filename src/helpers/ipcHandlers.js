@@ -302,6 +302,25 @@ class IPCHandlers {
       return true;
     });
 
+    // Toggle always-on-top state
+    ipcMain.handle("toggle-always-on-top", () => {
+      if (this.windowManager.mainWindow) {
+        const currentState = this.windowManager.mainWindow.isAlwaysOnTop();
+        const newState = !currentState;
+        this.windowManager.mainWindow.setAlwaysOnTop(newState);
+        return { success: true, alwaysOnTop: newState };
+      }
+      return { success: false };
+    });
+
+    // Get current always-on-top state
+    ipcMain.handle("get-always-on-top", () => {
+      if (this.windowManager.mainWindow) {
+        return { success: true, alwaysOnTop: this.windowManager.mainWindow.isAlwaysOnTop() };
+      }
+      return { success: false };
+    });
+
     ipcMain.handle("close-app", () => {
       require("electron").app.quit();
     });
