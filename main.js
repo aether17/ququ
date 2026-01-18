@@ -133,6 +133,7 @@ const ipcHandlers = new IPCHandlers({
   funasrManager,
   windowManager,
   hotkeyManager,
+  trayManager,
   logger, // 传递logger实例
 });
 

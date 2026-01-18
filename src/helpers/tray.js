@@ -67,12 +67,21 @@ class TrayManager {
 
   getTrayIconPath() {
     const isDev = process.env.NODE_ENV === "development";
-    
+
     if (isDev) {
       return path.join(__dirname, "..", "..", "assets", "icon.png");
     } else {
       // 生产环境路径
       return path.join(process.resourcesPath, "assets", "icon.png");
+    }
+  }
+
+  getRecordingIconPath() {
+    const isDev = process.env.NODE_ENV === "development";
+    if (isDev) {
+      return path.join(__dirname, "..", "..", "assets", "icon_recording.png");
+    } else {
+      return path.join(process.resourcesPath, "assets", "icon_recording.png");
     }
   }
 
@@ -133,17 +142,28 @@ class TrayManager {
   setStatus(status) {
     if (!this.tray) return;
 
+    let iconPath;
     switch (status) {
       case "recording":
+        iconPath = this.getRecordingIconPath();
         this.tray.setToolTip("蛐蛐 - 正在录音...");
         break;
       case "processing":
-        this.tray.setToolTip("蛐蛐 - 正在处理...");
-        break;
       case "ready":
       default:
-        this.tray.setToolTip("蛐蛐 - 中文语音转文字");
+        iconPath = this.getTrayIconPath();
+        this.tray.setToolTip(status === "processing" ? "蛐蛐 - 正在处理..." : "蛐蛐 - 中文语音转文字");
         break;
+    }
+
+    // Update the icon
+    if (iconPath && require("fs").existsSync(iconPath)) {
+      let trayIcon = nativeImage.createFromPath(iconPath);
+      if (process.platform === "darwin") {
+        trayIcon = trayIcon.resize({ width: 16, height: 16 });
+        trayIcon.setTemplateImage(true);
+      }
+      this.tray.setImage(trayIcon);
     }
   }
 }

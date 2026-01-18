@@ -8,11 +8,12 @@ class IPCHandlers {
     this.funasrManager = managers.funasrManager;
     this.windowManager = managers.windowManager;
     this.hotkeyManager = managers.hotkeyManager;
+    this.trayManager = managers.trayManager;
     this.logger = managers.logger; // 添加logger引用
-    
+
     // 跟踪F2热键注册状态
     this.f2RegisteredSenders = new Set();
-    
+
     this.setupHandlers();
   }
 
@@ -317,6 +318,15 @@ class IPCHandlers {
     ipcMain.handle("get-always-on-top", () => {
       if (this.windowManager.mainWindow) {
         return { success: true, alwaysOnTop: this.windowManager.mainWindow.isAlwaysOnTop() };
+      }
+      return { success: false };
+    });
+
+    // Update tray status and icon
+    ipcMain.handle("update-tray-status", (event, status) => {
+      if (this.trayManager) {
+        this.trayManager.setStatus(status);
+        return { success: true };
       }
       return { success: false };
     });

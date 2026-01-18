@@ -10,6 +10,9 @@ contextBridge.exposeInMainWorld("electronAPI", {
   toggleAlwaysOnTop: () => ipcRenderer.invoke("toggle-always-on-top"),
   getAlwaysOnTop: () => ipcRenderer.invoke("get-always-on-top"),
 
+  // 托盘状态
+  updateTrayStatus: (status) => ipcRenderer.invoke("update-tray-status", status),
+
   // 录音相关
   startRecording: () => ipcRenderer.invoke("start-recording"),
   stopRecording: () => ipcRenderer.invoke("stop-recording"),

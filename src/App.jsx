@@ -565,6 +565,17 @@ export default function App() {
     }
   }, [isRecording, syncRecordingState]);
 
+  // 同步托盘图标状态
+  useEffect(() => {
+    if (isRecording) {
+      window.electronAPI?.updateTrayStatus('recording');
+    } else if (isRecordingProcessing || isOptimizing) {
+      window.electronAPI?.updateTrayStatus('processing');
+    } else {
+      window.electronAPI?.updateTrayStatus('ready');
+    }
+  }, [isRecording, isRecordingProcessing, isOptimizing]);
+
   // 监听键盘事件
   useEffect(() => {
     const handleKeyPress = (e) => {
